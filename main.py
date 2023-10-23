@@ -22,14 +22,17 @@ with open("stop_times.txt") as file:
         if not line[3] == argv[0]: # Primerjava stop_id
             continue
         elif line[1] < now or line > now + 2 h: # Drugi del je le vzorčen
-            # Time bi pretvoril v številke -> lažja primerjava
+            # Time bi pretvoril v številke -> lažja primerjava - kot tuple?
             # Tukaj bi bilo potrebno tudi paziti na ure kot so 26:00:00
             # Druga func ki prevede v navadni čas? - Samo primerjaj po Urah -> Min -> Sec (raw int)
             route = get_route(trip_id)
-            if len(results[route]) > argv[2]:
+            if len(results[route]) >= argv[2]:
+                # Poglej ali je route v results
                 # Primerjaj zadnjega
                 # Če večji vrzi ven in vstavi v razvrščen array - mogoče zamenjaj array za drugi structure
                 # Nekaj kot je binary tree - samo z enim otrokom - povezano
                 #   s pointerji/referencami - ni potrebno naknadno premikati elementov
+            else:
+                results[route].append(line[1])
 
 print(results)
