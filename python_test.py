@@ -1,7 +1,7 @@
 import unittest
 import main
 
-class TestMain(unittest.TestCase):
+class Test_greater_then_time(unittest.TestCase):
     def test_greater_then_time_n1h(self):
         self.assertTrue(main.greater_then_time("02:00:00", "01:00:00"))
     def test_greater_then_time_n2h(self):
