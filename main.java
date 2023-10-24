@@ -1,5 +1,3 @@
-// Your First Program
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,16 +31,19 @@ class Time {
             seconds = "0" + Integer.toString(second);
         }
         ;
-        return hours + minutes + seconds;
+        return hours + ":" + minutes + ":" + seconds;
     }
 
     public boolean is_greater(Time time) {
-        if (hour < time.hour) {
-            if (minute < time.minute) {
-                return second > time.second;
+        if (this.hour == time.hour) {
+            if (this.minute == time.minute) {
+                return this.second > time.second;
+            } else {
+                return this.minute > time.minute;
             }
+        } else {
+            return this.hour > time.hour;
         }
-        return false;
     }
 
     public boolean correct_time() {
@@ -60,18 +61,15 @@ class Time {
 class main {
     public static String get_route(String trip_id) {
         try {
-            File file = new File("trip.txt");
+            File file = new File("trips.txt");
             Scanner tripsScanner = new Scanner(file);
             String route_id = "";
             while (tripsScanner.hasNextLine()) {
-                Scanner line = new Scanner(tripsScanner.nextLine()).useDelimiter(",");
-                route_id = line.next();
-                line.next();
-                if (line.next() == trip_id) {
-                    line.close();
+                String[] line = tripsScanner.nextLine().split(",", 4);
+                route_id = line[0];
+                if (line[2] == trip_id) {
                     break;
                 }
-                line.close();
             }
             tripsScanner.close();
 
@@ -79,19 +77,17 @@ class main {
             Scanner fileScanner = new Scanner(file);
             String route = "";
             while (fileScanner.hasNext()) {
-                Scanner line = new Scanner(tripsScanner.nextLine()).useDelimiter(",");
-                if (line.next() == route_id) {
-                    line.next();
-                    route = line.next();
-                    line.close();
-                    break;
+                String[] line = fileScanner.nextLine().split(",", 4);
+
+                if (line[0].equals(route_id)) {
+                    fileScanner.close();
+                    return line[2];
                 }
-                line.close();
             }
             fileScanner.close();
             return route;
         } catch (FileNotFoundException e) {
-            // TODO: handle exception
+            System.out.println("File trips.exe was not found.");
         }
         return "";
     }
@@ -128,7 +124,7 @@ class main {
                                     .is_greater(time_arrival)) {
                                 Time to_swap = time_arrival; // Here is just to sort
                                 for (int i = 0; i < restultsMap.get(route_name).length; i++) {
-                                    if (to_swap.is_greater(restultsMap.get(route_name)[i])) {
+                                    if (restultsMap.get(route_name)[i].is_greater(to_swap)) {
                                         Time c = restultsMap.get(route_name)[i];
                                         restultsMap.get(route_name)[i] = to_swap;
                                         to_swap = c;
@@ -143,31 +139,37 @@ class main {
                             restultsMap.put(route_name, temp);
                             restultsMap.get(route_name)[0] = time_arrival;
                         }
-                        }
+                    }
                 }
             }
-            
+
             stopTimeScanner.close();
-            File stopNameFile = new File("stop.txt");
+            File stopNameFile = new File("stops.txt");
             Scanner stopNameScanner = new Scanner(stopNameFile);
             while (stopNameScanner.hasNext()) {
-                String[] line = stopNameScanner.nextLine().split(",", 3);
-                if (line[0] == args[0]){
-                    System.out.print("Postajališče " + line[2]);
+                String[] line = stopNameScanner.nextLine().split(",", 4);
+                if (line[0].equals(args[0])) {
+                    System.out.println("Postajališče " + line[2]);
+                    break;
                 }
             }
             stopNameScanner.close();
-            for (Map.Entry<String,Time[]> entry : restultsMap.entrySet()) {
+            for (Map.Entry<String, Time[]> entry : restultsMap.entrySet()) {
                 String to_print = entry.getKey() + ": ";
                 for (Time t : entry.getValue()) {
                     if (t.dummy == false) {
-                        to_print += t.toString();
+                        if (args[2].equals("absolute")) {
+                            to_print += t.toString() + "min ";
+                        } else {
+                            to_print += Integer.toString((t.hour - Time.now.hour) * 60 + t.minute - Time.now.minute)
+                                    + "min ";
+                        }
                     }
                 }
                 System.out.println(to_print);
             }
         } catch (FileNotFoundException e) {
-            // TODO: handle exception
+            System.out.println("File not found");
         }
     }
 }
