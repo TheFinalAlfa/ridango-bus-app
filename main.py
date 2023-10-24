@@ -24,6 +24,7 @@ def get_route(trip_id):
 
 def greater_then_time(time1, time2):
     # sprejema str HH:MM:SS
+    # V Javi samo class...
     if (int(time1[0:2]) <= int(time2[0:2])):
         if int(time1[3:5]) <= int(time2[3:5]):
             return int(time1[6:8]) > int(time2[6:8])
